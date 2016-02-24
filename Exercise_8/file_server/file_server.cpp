@@ -37,6 +37,11 @@ void sendFile(string fileName, long fileSize, int outToClient);
  */
 int main(int argc, char *argv[])
 {
+
+ 	long test = check_File_Exists("fil1");
+
+ 	cout << test << endl;
+
  	int serverPort = PORT;
  	sockaddr_in addr_s, addr_c;
 
@@ -52,16 +57,26 @@ int main(int argc, char *argv[])
     addr_s.sin_port = htons(serverPort);
 
 	int sockfd = socket(AF_INET, SOCK_STREAM,0);
+
 	if(sockfd<0)
 	{
+		close(sockfd);
 		error("Kunne ikke oprette velkommen socket!\n");
 	}
+
+	cout << "Socket oprettet" << endl;
+
 	if(bind(sockfd,(sockaddr*) &addr_s, sizeof(addr_s)))
 	{
+		close(sockfd);
 		error("Kunne ikke binde sig til server socket!\n");
 	}
 
+	cout << "forbundet til socket" << endl;
+
 	listen(sockfd, 1); // 1 = max 1 klient
+
+	cout << "venter på klient" << endl;
 
 	socklen_t clilen = sizeof(addr_c);
 
@@ -69,22 +84,28 @@ int main(int argc, char *argv[])
 
 	if(newSockfd<0)
 	{
+		close(newSockfd);
+		close(sockfd);
 		error("Kunne ikke oprette forbindelse til klient!\n");
 	}
 
+	cout << "en klient har oprettet forbindelse til denne server!" << endl;
+
 	string file = readTextTCP("", newSockfd);
+
+	cout << "klienten vil gerne hente filen: " << file << endl;
 
 	long size = check_File_Exists(file);
 
-	char buf_string;
+	char charSize[50];
 
-	string Ssize;
+	sprintf(charSize, "%ld", size);
 
+	cout << "file size : " << size << " bytes" << endl;
 
+	write(newSockfd, charSize, strlen(charSize));
 
-	Ssize = size;
-
-	write(newSockfd, Ssize.c_str(), Ssize.size()+1);
+	cout << "sendt size til klient" << endl;
 
 	if(size == 0)
 	{
@@ -94,7 +115,10 @@ int main(int argc, char *argv[])
 	}
 
 	sendFile(file, size, newSockfd);
+	cout << "filen er sendt lukker serven" << endl;
 
+	close(newSockfd);
+	close(sockfd);
 	return 0;
 }
 
@@ -121,8 +145,17 @@ void sendFile(string fileName, long fileSize, int outToClient)
 		{
 			streamSize = fileSize -point;
 		}
+		cout << streamSize << endl;
 
-		file.get(buf, streamSize);
+
+
+		//file.get(buf, streamSize);
+
+		for(int i = 0; i < streamSize; i++)
+		{
+			file.get(buf[i]);
+		}
+
 		write(outToClient, buf, streamSize);
 
 		point += streamSize;

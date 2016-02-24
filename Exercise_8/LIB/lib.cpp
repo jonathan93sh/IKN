@@ -91,7 +91,7 @@ const long getFileSizeTCP(int inFromServer)
 const long check_File_Exists(std::string fileName)
 {
 	struct stat sts;
-	if ((stat (fileName.c_str(), &sts)) == -1)
+	if ((stat (fileName.c_str(), &sts)) != 0)
 		return 0;
 
 	return sts.st_size;
