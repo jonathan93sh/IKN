@@ -1,3 +1,2 @@
-/root/Projects/Exercise_8_c++/LIB/bin/Debug/lib.o: \
- /root/Projects/Exercise_8_c++/LIB/lib.cpp \
- /root/Projects/Exercise_8_c++/LIB/lib.h
+/root/git/IKN/Exercise_8/LIB/bin/Debug/lib.o: \
+ /root/git/IKN/Exercise_8/LIB/lib.cpp /root/git/IKN/Exercise_8/LIB/lib.h

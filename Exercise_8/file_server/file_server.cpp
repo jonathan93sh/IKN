@@ -15,6 +15,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <lib.h>
+#include <iostream>
+#include <fstream>
+
 
 using namespace std;
 
@@ -34,7 +37,65 @@ void sendFile(string fileName, long fileSize, int outToClient);
  */
 int main(int argc, char *argv[])
 {
-	// TO DO Your own code
+ 	int serverPort = PORT;
+ 	sockaddr_in addr_s, addr_c;
+
+ //	struct sockaddr_in {
+ //       short   sin_family;
+ //       u_short sin_port;
+ //       struct  in_addr sin_addr;
+ //       char    sin_zero[8];
+//	};
+
+	addr_s.sin_family = AF_INET;
+    addr_s.sin_addr.s_addr = INADDR_ANY;
+    addr_s.sin_port = htons(serverPort);
+
+	int sockfd = socket(AF_INET, SOCK_STREAM,0);
+	if(sockfd<0)
+	{
+		error("Kunne ikke oprette velkommen socket!\n");
+	}
+	if(bind(sockfd,(sockaddr*) &addr_s, sizeof(addr_s)))
+	{
+		error("Kunne ikke binde sig til server socket!\n");
+	}
+
+	listen(sockfd, 1); // 1 = max 1 klient
+
+	socklen_t clilen = sizeof(addr_c);
+
+	int newSockfd = accept(sockfd,(sockaddr*) &addr_c, &clilen);
+
+	if(newSockfd<0)
+	{
+		error("Kunne ikke oprette forbindelse til klient!\n");
+	}
+
+	string file = readTextTCP("", newSockfd);
+
+	long size = check_File_Exists(file);
+
+	char buf_string;
+
+	string Ssize;
+
+
+
+	Ssize = size;
+
+	write(newSockfd, Ssize.c_str(), Ssize.size()+1);
+
+	if(size == 0)
+	{
+		close(newSockfd);
+		close(sockfd);
+		error("Filen findes ikke!\n");
+	}
+
+	sendFile(file, size, newSockfd);
+
+	return 0;
 }
 
 /**
@@ -46,6 +107,29 @@ int main(int argc, char *argv[])
 	 */
 void sendFile(string fileName, long fileSize, int outToClient)
 {
-	// TO DO Your own code
+	char buf[BUFSIZE];
+	long point = 0;
+
+
+	ifstream file; 
+	file.open(fileName.c_str(), fstream::in);
+
+	while(point < fileSize)
+	{
+		int streamSize = BUFSIZE;
+		if((point + BUFSIZE) > fileSize)
+		{
+			streamSize = fileSize -point;
+		}
+
+		file.get(buf, streamSize);
+		write(outToClient, buf, streamSize);
+
+		point += streamSize;
+
+	} 
+
+	file.close();
+		 
 }
 
