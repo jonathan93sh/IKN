@@ -29,11 +29,8 @@
         <LibPath>${ProjectDir}/../LIB/bin/Debug</LibPath>
       </LibPaths>
     </LibPaths>
-    <Libs>
-      <Libs>
-        <Lib>LIB</Lib>
-      </Libs>
-    </Libs>
+    <ExtraCompilerArguments>-L"/root/git/IKN/Exercise_8/file_server/../LIB/bin/Debug" -l"LIB" -lssl -lcrypto </ExtraCompilerArguments>
+    <ExtraLinkerArguments>-L"/root/git/IKN/Exercise_8/file_server/../LIB/bin/Debug" -l"LIB" -lssl -lcrypto </ExtraLinkerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>

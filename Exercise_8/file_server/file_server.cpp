@@ -17,6 +17,7 @@
 #include <lib.h>
 #include <iostream>
 #include <fstream>
+//#include <openssl/md5.h>
 
 
 using namespace std;
@@ -37,11 +38,15 @@ void sendFile(string fileName, long fileSize, int outToClient);
  */
 int main(int argc, char *argv[])
 {
-
+ 	/* test
  	long test = check_File_Exists("fil1");
 
  	cout << test << endl;
+	
+	string sha256_str_test = getFile_sha_sum("/root/git/IKN/Exercise_8/file_client/bin/Debug/fil1");
 
+	cout << "sha256 test : " << sha256_str_test << endl;
+	*/
  	int serverPort = PORT;
  	sockaddr_in addr_s, addr_c;
 
@@ -116,13 +121,15 @@ int main(int argc, char *argv[])
 
 				cout << "file size : " << size << " bytes" << endl;
 
-				write(newSockfd, charSize, strlen(charSize));
+				write(newSockfd, charSize, strlen(charSize)+1);
 
 				cout << "sendt size til klient" << endl;
 
-				string MD5_str = getFile_md5_sum(file);
+				string sha256_str = getFile_sha_sum(file);
 
-				write(newSockfd, MD5_str.c_str(), MD5_str.size());
+				cout << "sha256 : " << sha256_str << endl;
+
+				write(newSockfd, sha256_str.c_str(), sha256_str.size()+1);
 
 				if(size == 0)
 				{
@@ -137,10 +144,14 @@ int main(int argc, char *argv[])
 					{
 						retry = true;
 						retrys++;
+						cout << "fejl i transsmision" << endl;
+					}
+					else
+					{
+						cout << "filen er sendt lukker socket mellem server og klient" << endl;
 					}
 
 
-					cout << "filen er sendt lukker socket mellem server og klient" << endl;
 				}
 			}while(retry && retrys < 5);
 
@@ -167,7 +178,7 @@ void sendFile(string fileName, long fileSize, int outToClient)
 
 	ifstream file; 
 	file.open(fileName.c_str(), fstream::in);
-
+	double procent = 0;
 	while(point < fileSize)
 	{
 		int streamSize = BUFSIZE;
@@ -175,21 +186,21 @@ void sendFile(string fileName, long fileSize, int outToClient)
 		{
 			streamSize = fileSize -point;
 		}
-		cout << streamSize << endl;
-
-
-
-		//file.get(buf, streamSize);
-
+			
 		for(int i = 0; i < streamSize; i++)
 		{
+			
 			file.get(buf[i]);
 		}
 
 		write(outToClient, buf, streamSize);
 
 		point += streamSize;
-
+		if(procent <= ((double)point/(double)fileSize)*100)
+		{
+			cout << "procent done : " << procent << "%" << endl;
+			procent+=25;
+		}
 	} 
 
 	file.close();

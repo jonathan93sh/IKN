@@ -27,11 +27,12 @@ int main(int argc, char *argv[])
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
 
+
 	// syntax ./file_client <file_server’s ip-adr.> <[sti] + filnavn>
-  	if (argc < 2)
+  	if (argc != 3)
     	error("For faa input argumenter");
 
-  	if(check_File_Exists(extractFileName(argv[1])) != 0)
+  	if(check_File_Exists(extractFileName(argv[2])) != 0)
   		error("Filen findes allerede");
 
 	socketfd = socket(AF_INET,SOCK_STREAM,0); //if socket fails it returns -1
@@ -40,8 +41,9 @@ int main(int argc, char *argv[])
 		close(socketfd);
 		error("Kunne ikke oprette socket");
 	}
+	cout << "Der er oprettet forbindelse til socket" << endl;
 
-	server = gethostbyname(argv[0]); //hvis systemet ikke kan finde navnet bliver server til NULL
+	server = gethostbyname(argv[1]); //hvis systemet ikke kan finde navnet bliver server til NULL
 	if (server == NULL)
 	{
 		close(socketfd);
@@ -60,8 +62,14 @@ int main(int argc, char *argv[])
 		error("Kunne ikke oprette forbindelse til serveren");
 	}
 
+	cout << "Der er oprettet forbindelse til serveren" << endl;
+
 	//write to serveren
-	writeTextTCP(argv[1], socketfd);
+	writeTextTCP(argv[2], socketfd);
+
+	cout << "Filnavn sendt til serveren" << endl;
+
+	receiveFile(argv[2],socketfd);
 
   	close(socketfd);
   	return 0;
@@ -86,29 +94,50 @@ void receiveFile(string fileName, int sockfd)
 	 	char buf;
 
 	 	long size = getFileSizeTCP(sockfd);
-	 	string md5_string = readTextTCP(fileName,sockfd);
+
+	 	cout << "file size: " << size << " bytes" << endl;
+
+	 	string sha256_string = readTextTCP("",sockfd);
+
+	 	cout << "sha256 : " << sha256_string << endl;
 
 	 	ofstream file; 
 	 	file.open(fileName.c_str());
+
+	 	double procent = 0;
 
 	 	for(long i = 0; i<size; i++)
 	 	{
 	 		read(sockfd,&buf, 1);
 	 		file.put(buf);
+	 		if(procent <= ((double)(i+1)/(double)size)*100)
+			{
+				cout << "procent done : " << procent << "%" << endl;
+				procent+=25;
+			}
 	 	}
+	 	cout << "done"  << endl;
 
 		file.close();
-		if(md5_string != getFile_md5_sum(fileName))
+
+		string modtaget_sha256_string = getFile_sha_sum(fileName);
+
+		cout << "sha256 : " << sha256_string << " modtaget" << endl;
+
+		if(sha256_string != modtaget_sha256_string)
 		{
+			cout << "sha256 passer ikke!" << endl;
 			retry = true;
 			string nope = "It's not ok yet";
-			write(sockfd,nope.c_str(), nope.size());
+
+			write(sockfd,nope.c_str(), nope.size()+1);
 		}
 		else
 		{
+			cout << "sha256 er ens" << endl;
 			retry = false;
 			string ok = "ok";
-			write(sockfd,ok.c_str(), ok.size());
+			write(sockfd,ok.c_str(), ok.size()+1);
 		}
 
 	} while(retry);

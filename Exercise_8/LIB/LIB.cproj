@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8CBF5578-0647-4AD2-A8DD-1F2AEC0A845D}</ProjectGuid>
     <Target>Bin</Target>
@@ -24,6 +24,7 @@
         <Include>${ProjectDir}</Include>
       </Includes>
     </Includes>
+    <ExtraCompilerArguments>-lssl -lcrypto</ExtraCompilerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
