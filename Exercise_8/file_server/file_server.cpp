@@ -120,9 +120,9 @@ int main(int argc, char *argv[])
 
 				cout << "sendt size til klient" << endl;
 
-				MD5 = getFile_md5_sum(file);
+				string MD5_str = getFile_md5_sum(file);
 
-				write(newSockfd, MD5.c_str(), MD5.size());
+				write(newSockfd, MD5_str.c_str(), MD5_str.size());
 
 				if(size == 0)
 				{
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
 					cout << "filen er sendt lukker socket mellem server og klient" << endl;
 				}
-			}while(retry && retry < 5);
+			}while(retry && retrys < 5);
 
 		}
 		close(newSockfd);

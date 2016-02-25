@@ -16,6 +16,9 @@
 #include <netdb.h>
 #include <sys/stat.h>
 #include <lib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 
 #include <openssl/md5.h>
 
@@ -105,14 +108,14 @@ const std::string getFile_md5_sum(std::string fileName)
 {
 	unsigned char result[MD5_DIGEST_LENGTH];
 	int file_descript;
-	char* file_buffer;
-	string md5_sum_str = "";
+	void* file_buffer;
+	std::string md5_sum_str = "";
 
 	long size = check_File_Exists(fileName);
 	if(size == 0)
 		return "";
 
-	file_descript = open(fileName, O_RDONLY);
+	file_descript = open(fileName.c_str(), O_RDONLY);
 	if(file_descript < 0)
 		return "";
 
@@ -123,6 +126,6 @@ const std::string getFile_md5_sum(std::string fileName)
 		sprintf(buf, "%02x", result[i]);
 		md5_sum_str += buf;
 	}
-
+	munmap(file_buffer, (unsigned long) size);
 	return md5_sum_str;
 }
