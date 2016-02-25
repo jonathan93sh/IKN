@@ -74,50 +74,80 @@ int main(int argc, char *argv[])
 
 	cout << "forbundet til socket" << endl;
 
-	listen(sockfd, 1); // 1 = max 1 klient
+	listen(sockfd, 5); // 5 = max 5 klient
 
-	cout << "venter på klient" << endl;
+
 
 	socklen_t clilen = sizeof(addr_c);
 
-	int newSockfd = accept(sockfd,(sockaddr*) &addr_c, &clilen);
-
-	if(newSockfd<0)
+	while(1)
 	{
+		cout << "venter på klient" << endl;
+		int newSockfd = accept(sockfd,(sockaddr*) &addr_c, &clilen);
+
+		if(newSockfd<0)
+		{
+			close(newSockfd);
+			cout << "Kunne ikke oprette forbindelse til klient!" << endl;
+		}
+		else
+		{
+			bool retry = false;
+			int retrys = 0;
+			cout << "en klient har oprettet forbindelse til denne server!" << endl;
+			string file = readTextTCP("", newSockfd);
+
+			cout << "klienten vil gerne hente filen: " << file << endl;
+
+			do
+			{
+				if(retry)
+				{
+					cout << "fejl " << file << endl;
+
+				}
+				retry = false;
+
+				long size = check_File_Exists(file);
+
+				char charSize[50];
+
+				sprintf(charSize, "%ld", size);
+
+				cout << "file size : " << size << " bytes" << endl;
+
+				write(newSockfd, charSize, strlen(charSize));
+
+				cout << "sendt size til klient" << endl;
+
+				MD5 = getFile_md5_sum(file);
+
+				write(newSockfd, MD5.c_str(), MD5.size());
+
+				if(size == 0)
+				{
+					cout << "Filen findes ikke!" << endl;
+				}
+				else
+				{
+					sendFile(file, size, newSockfd);
+					string check = readTextTCP("", newSockfd);
+
+					if(check != "ok")
+					{
+						retry = true;
+						retrys++;
+					}
+
+
+					cout << "filen er sendt lukker socket mellem server og klient" << endl;
+				}
+			}while(retry && retry < 5);
+
+		}
 		close(newSockfd);
-		close(sockfd);
-		error("Kunne ikke oprette forbindelse til klient!\n");
 	}
 
-	cout << "en klient har oprettet forbindelse til denne server!" << endl;
-
-	string file = readTextTCP("", newSockfd);
-
-	cout << "klienten vil gerne hente filen: " << file << endl;
-
-	long size = check_File_Exists(file);
-
-	char charSize[50];
-
-	sprintf(charSize, "%ld", size);
-
-	cout << "file size : " << size << " bytes" << endl;
-
-	write(newSockfd, charSize, strlen(charSize));
-
-	cout << "sendt size til klient" << endl;
-
-	if(size == 0)
-	{
-		close(newSockfd);
-		close(sockfd);
-		error("Filen findes ikke!\n");
-	}
-
-	sendFile(file, size, newSockfd);
-	cout << "filen er sendt lukker serven" << endl;
-
-	close(newSockfd);
 	close(sockfd);
 	return 0;
 }

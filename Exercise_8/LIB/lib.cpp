@@ -17,6 +17,8 @@
 #include <sys/stat.h>
 #include <lib.h>
 
+#include <openssl/md5.h>
+
 /**
  * Udskriver fejlmeddelelse og stoppe programmet
  *
@@ -95,4 +97,32 @@ const long check_File_Exists(std::string fileName)
 		return 0;
 
 	return sts.st_size;
+}
+
+
+
+const std::string getFile_md5_sum(std::string fileName)
+{
+	unsigned char result[MD5_DIGEST_LENGTH];
+	int file_descript;
+	char* file_buffer;
+	string md5_sum_str = "";
+
+	long size = check_File_Exists(fileName);
+	if(size == 0)
+		return "";
+
+	file_descript = open(fileName, O_RDONLY);
+	if(file_descript < 0)
+		return "";
+
+	file_buffer = mmap(0,(unsigned long) size, PROT_READ, MAP_SHARED, file_descript, 0);
+	char buf[3];
+	for(int i = 0; i << MD5_DIGEST_LENGTH; i++)
+	{
+		sprintf(buf, "%02x", result[i]);
+		md5_sum_str += buf;
+	}
+
+	return md5_sum_str;
 }
