@@ -34,17 +34,17 @@ int main(int argc, char *argv[])
   	if(check_File_Exists(extractFileName(argv[1])) != 0)
   		error("Filen findes allerede");
 
-	sockfd = socket(AF_INET,SOCK_STREAM,0); //if socket fails it returns -1
-	if(sockfd < 0)
+	socketfd = socket(AF_INET,SOCK_STREAM,0); //if socket fails it returns -1
+	if(socketfd < 0)
 	{
-		close(sockfd);
+		close(socketfd);
 		error("Kunne ikke oprette socket");
 	}
 
 	server = gethostbyname(argv[0]); //hvis systemet ikke kan finde navnet bliver server til NULL
 	if (server == NULL)
 	{
-		close(sockfd);
+		close(socketfd);
 		error("Den angivne host kan ikke findes");
 	}
 
@@ -54,18 +54,16 @@ int main(int argc, char *argv[])
 	bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
 	serv_addr.sin_port = htons(serverPort);
 
-	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) //0 ved succes -1 ved fejl
+	if (connect(socketfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) //0 ved succes -1 ved fejl
 	{
-		close(sockfd);
+		close(socketfd);
 		error("Kunne ikke oprette forbindelse til serveren");
 	}
 
 	//write to serveren
-	var = writeTextTCP(argv[1], sockfd);
-	if(var < 0)
-		error("Kunne ikke skrive til socketen");
+	writeTextTCP(argv[1], socketfd);
 
-  	close(sockfd);
+  	close(socketfd);
   	return 0;
 }
 
@@ -91,12 +89,12 @@ void receiveFile(string fileName, int sockfd)
 	 	string md5_string = readTextTCP(fileName,sockfd);
 
 	 	ofstream file; 
-	 	file.open(fileName);
+	 	file.open(fileName.c_str());
 
 	 	for(long i = 0; i<size; i++)
 	 	{
 	 		read(sockfd,&buf, 1);
-	 		file.write(buf);
+	 		file.put(buf);
 	 	}
 
 		file.close();
