@@ -9,6 +9,10 @@
 #define LIB_H_
 
 #include <iostream>
+<<<<<<< HEAD
+=======
+#include <openssl/md5.h>
+>>>>>>> ace4e1fa37f92696df7e5dc6440b9b4c4e6286e9
 
 #define PORT 9000
 #define BUFSIZE 1000
