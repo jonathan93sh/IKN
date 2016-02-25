@@ -88,7 +88,7 @@ void receiveFile(string fileName, int sockfd)
 	 	char buf;
 
 	 	long size = getFileSizeTCP(sockfd);
-	 	string md5 = readTextTCP(fileName,sockfd);
+	 	string md5_string = readTextTCP(fileName,sockfd);
 
 	 	ofstream file; 
 	 	file.open(fileName);
@@ -100,7 +100,7 @@ void receiveFile(string fileName, int sockfd)
 	 	}
 
 		file.close();
-		if(md5 != getFile_md5_sum(fileName))
+		if(md5_string != getFile_md5_sum(fileName))
 		{
 			retry = true;
 			string nope = "It's not ok yet";
