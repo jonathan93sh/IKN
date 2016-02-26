@@ -129,7 +129,11 @@ const std::string getFile_sha_sum(std::string fileName)
 	for(long i = 0; i < size; i+=bufSize)
 	{
 		int tempBufSize = bufSize;
-		if(i + tempBufSize >= size)
+
+		if(size <= bufSize)
+		{
+			tempBufSize = size;
+		}else if(i + tempBufSize >= size)
 		{
 			tempBufSize = size - (i + tempBufSize);
 		}
