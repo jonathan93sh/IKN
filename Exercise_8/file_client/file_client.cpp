@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
 	cout << "Filnavn sendt til serveren" << endl;
 
-	receiveFile(argv[2],socketfd);
+	receiveFile(extractFileName(argv[2]),socketfd);
 
   	close(socketfd);
   	return 0;
@@ -122,7 +122,7 @@ void receiveFile(string fileName, int sockfd)
 
 		string modtaget_sha256_string = getFile_sha_sum(fileName);
 
-		cout << "sha256 : " << sha256_string << " modtaget" << endl;
+		cout << "sha256 : " << modtaget_sha256_string << " modtaget" << endl;
 
 		if(sha256_string != modtaget_sha256_string)
 		{
