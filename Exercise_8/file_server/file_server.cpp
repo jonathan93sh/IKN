@@ -17,12 +17,13 @@
 #include <lib.h>
 #include <iostream>
 #include <fstream>
-//#include <openssl/md5.h>
+#include <sys/time.h>
 
+#define TIME_OUT 5000
 
 using namespace std;
 
-void sendFile(string fileName, long fileSize, int outToClient);
+bool sendFile(string fileName, long fileSize, int outToClient);
 
 /**
  * main starter serveren og venter på en forbindelse fra en klient
@@ -85,10 +86,13 @@ int main(int argc, char *argv[])
 
 	socklen_t clilen = sizeof(addr_c);
 
+	//struct timeval start, now;
+
 	while(1)
 	{
 		cout << "venter på klient" << endl;
 		int newSockfd = accept(sockfd,(sockaddr*) &addr_c, &clilen);
+		//gettimeofday(&start,NULL);
 
 		if(newSockfd<0)
 		{
@@ -121,7 +125,18 @@ int main(int argc, char *argv[])
 
 				cout << "file size : " << size << " bytes" << endl;
 
-				write(newSockfd, charSize, strlen(charSize)+1);
+				if(write(newSockfd, charSize, strlen(charSize)+1) != strlen(charSize)+1)
+				{
+					cout << "fail lost connection to client!!" << endl;
+					close(newSockfd);
+					break;
+				}
+
+				if(size <= 0)
+				{
+					cout << "no file" << endl;
+					break;
+				}
 
 				cout << "sendt size til klient" << endl;
 
@@ -129,7 +144,12 @@ int main(int argc, char *argv[])
 
 				cout << "sha256 : " << sha256_str << endl;
 
-				write(newSockfd, sha256_str.c_str(), sha256_str.size()+1);
+				if(write(newSockfd, sha256_str.c_str(), sha256_str.size()+1) != sha256_str.size()+1)
+				{
+					cout << "fail lost connection to client!!" << endl;
+					close(newSockfd);
+					break;
+				}
 
 				if(size == 0)
 				{
@@ -137,19 +157,26 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					sendFile(file, size, newSockfd);
-					string check = readTextTCP("", newSockfd);
-
-					if(check != "ok")
+					if(sendFile(file, size, newSockfd))
 					{
-						retry = true;
-						retrys++;
-						cout << "fejl i transsmision" << endl;
+						string check = readTextTCP("", newSockfd);
+
+						if(check != "ok")
+						{
+							retry = true;
+							retrys++;
+							cout << "fejl i transsmision" << endl;
+						}
+						else
+						{
+							cout << "filen er sendt lukker socket mellem server og klient" << endl;
+						}
 					}
 					else
 					{
-						cout << "filen er sendt lukker socket mellem server og klient" << endl;
+						break;
 					}
+
 
 
 				}
@@ -170,7 +197,7 @@ int main(int argc, char *argv[])
  * @param fileSize Størrelsen på filen, 0 hvis den ikke findes
  * @param outToClient Stream som der skrives til socket
 	 */
-void sendFile(string fileName, long fileSize, int outToClient)
+bool sendFile(string fileName, long fileSize, int outToClient)
 {
 	char buf[BUFSIZE];
 	long point = 0;
@@ -193,7 +220,16 @@ void sendFile(string fileName, long fileSize, int outToClient)
 			file.get(buf[i]);
 		}
 
-		write(outToClient, buf, streamSize);
+		streamSize = write(outToClient, buf, streamSize);
+
+		//cout << "sendt : " << streamSize << " point: " << point << "/" << fileSize << endl;
+
+		if(streamSize == -1)
+		{
+			cout << "fail lost connection to client!!" << endl;
+			file.close();
+			return false;
+		}
 
 		point += streamSize;
 		if(procent <= ((double)point/(double)fileSize)*100)
@@ -204,6 +240,7 @@ void sendFile(string fileName, long fileSize, int outToClient)
 	} 
 
 	file.close();
+	return true;
 		 
 }
 

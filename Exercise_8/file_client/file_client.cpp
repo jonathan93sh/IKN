@@ -95,6 +95,12 @@ void receiveFile(string fileName, int sockfd)
 
 	 	long size = getFileSizeTCP(sockfd);
 
+	 	if (size <= 0)
+	 	{
+	 		cout << "fil findes ikke!" << endl;
+	 		return;
+	 	}
+
 	 	cout << "file size: " << size << " bytes" << endl;
 
 	 	string sha256_string = readTextTCP("",sockfd);
