@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
 		n =recvfrom(sockfd, buf, 1024, 0,(struct sockaddr *)&addr_c, &from_length);
 		if (n < 0)error("fejl i recvfrom");
 
+		cout << "har modtaget noget" << endl;
+
 		if(buf[1] == '\0')
 		{
 			if(buf[0] == 'U' || buf[0] == 'u')

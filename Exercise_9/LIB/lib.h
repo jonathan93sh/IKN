@@ -20,7 +20,6 @@ const std::string readTextTCP(std::string inText, int inFromServer);
 void writeTextTCP(std::string line, int outToServer);
 const long getFileSizeTCP(int inFromServer);
 const long check_File_Exists(std::string fileName);
-//const std::string getFile_md5_sum(std::string fileName);
- const std::string getFile_sha_sum(std::string fileName);
+
 
 #endif /* LIB_H_ */
