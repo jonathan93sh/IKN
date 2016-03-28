@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 				file.getline(filebuf, 1024);
 				file.close();
 				cout << filebuf << endl;
-				n = sendto(sockfd, filebuf, strlen(filebuf), 0, (struct sockaddr *)&addr_c, from_length);
+				n = sendto(sockfd, filebuf, strlen(filebuf)+1, 0, (struct sockaddr *)&addr_c, from_length);
 				if (n < 0)error("fejl i sendto");
 			}
 			else if(buf[0] == 'L' || buf[0] == 'l')
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 				file.getline(filebuf, 1024);
 				file.close();
 				cout << filebuf << endl;
-				n = sendto(sockfd, filebuf, strlen(filebuf), 0, (struct sockaddr *)&addr_c, from_length);
+				n = sendto(sockfd, filebuf, strlen(filebuf)+1, 0, (struct sockaddr *)&addr_c, from_length);
 				if (n < 0)error("fejl i sendto");
 			}
 
