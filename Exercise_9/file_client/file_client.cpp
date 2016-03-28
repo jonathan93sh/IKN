@@ -68,11 +68,10 @@ int main(int argc, char *argv[])
 	n = recvfrom(socketfd, buffer, 256,0, (struct sockaddr *)&from, &length);
 	if(n < 0)
 		error("Beskeden kunne ikke modtages");
+	
+	cout << "Der blev modtaget: " << buffer << endl;
 
-	//write(1, "Der blev modtaget: ", 9);
-	//write(1, buffer, n);
-
-	cout << "Succes: Socket lukkes" << endl;
+	cout << "Overførsel Succesfuld: Socket lukkes" << endl;
 
   	close(socketfd);
   	return 0;
