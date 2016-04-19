@@ -1,0 +1,5 @@
+Name: Transport
+Description: 
+Version: 0.1
+Libs: -L"/root/Downloads/Exercise_13_c++/Transport/bin/Debug" -lTransport
+Cflags: -I"/root/Downloads/Exercise_13_c++/Transport"

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4161C3AE-5DF3-4D17-817B-8CEB794CE727}</ProjectGuid>
+    <Target>Bin</Target>
+    <Language>CPP</Language>
+    <Compiler>
+      <Compiler ctype="GppCompiler" />
+    </Compiler>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
+    <SourceDirectory>.</SourceDirectory>
+    <OutputName>file_client</OutputName>
+    <CompileTarget>Bin</CompileTarget>
+    <Includes>
+      <Includes>
+        <Include>${ProjectDir}/../LIB</Include>
+        <Include>${ProjectDir}/../Link</Include>
+        <Include>${ProjectDir}/../Transport</Include>
+        <Include>${ProjectDir}</Include>
+      </Includes>
+    </Includes>
+    <Libs>
+      <Libs>
+        <Lib>LIB</Lib>
+        <Lib>Transport</Lib>
+        <Lib>Link</Lib>
+        <Lib>ezV24</Lib>
+      </Libs>
+    </Libs>
+    <LibPaths>
+      <LibPaths>
+        <LibPath>${ProjectDir}/../LIB/bin/Debug</LibPath>
+        <LibPath>${ProjectDir}/../Transport/bin/Debug</LibPath>
+        <LibPath>${ProjectDir}/../Link/bin/Debug</LibPath>
+      </LibPaths>
+    </LibPaths>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release</OutputPath>
+    <DefineSymbols>MONODEVELOP</DefineSymbols>
+    <SourceDirectory>.</SourceDirectory>
+    <OptimizationLevel>3</OptimizationLevel>
+    <OutputName>file_client</OutputName>
+    <CompileTarget>Bin</CompileTarget>
+    <Includes>
+      <Includes>
+        <Include>${ProjectDir}/../LIB</Include>
+        <Include>${ProjectDir}/../Link</Include>
+        <Include>${ProjectDir}/../Transport</Include>
+        <Include>${ProjectDir}</Include>
+      </Includes>
+    </Includes>
+    <Libs>
+      <Libs>
+        <Lib>LIB</Lib>
+        <Lib>Transport</Lib>
+        <Lib>Link</Lib>
+        <Lib>ezV24</Lib>
+      </Libs>
+    </Libs>
+    <LibPaths>
+      <LibPaths>
+        <LibPath>${ProjectDir}/../LIB/bin/Release</LibPath>
+        <LibPath>${ProjectDir}/../Transport/bin/Release</LibPath>
+        <LibPath>${ProjectDir}/../Link/bin/Release</LibPath>
+      </LibPaths>
+    </LibPaths>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="file_client.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="file_client.cpp" />
+  </ItemGroup>
+</Project>

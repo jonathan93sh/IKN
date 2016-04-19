@@ -1,0 +1,5 @@
+Name: Link
+Description: 
+Version: 0.1
+Libs: -L"/root/Downloads/Exercise_13_c++/Link/bin/Debug" -lLink
+Cflags: -I"/root/Downloads/Exercise_13_c++/Link"
