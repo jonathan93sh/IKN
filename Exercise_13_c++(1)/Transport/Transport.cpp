@@ -79,7 +79,21 @@ namespace Transport
 	/// </param>
 	void Transport::send(const char buf[], short size)
 	{
-		// TO DO Your own code
+		//lol
+		checksum->calcChecksum(buf,size);
+		char header[28] = buf[CHKSUMHIGH]+buf[CHKSUMLOW]+seqNo+ackTYPE;
+
+		//wait for 0 from above
+		ackTYPE = 0;
+		char size_packet = size+strlen(header);
+		char packet[size_packet] = header+buf;
+
+		link->send(packet,size_packet);
+		while(!receiveAck());
+
+		//.... if fail => send again.. timeouts
+
+		//if ack received with right seqNR => done..
 	}
 
 	/// <summary>
