@@ -117,7 +117,7 @@ short Link::receive(char buf[], short size)
 {
  	short sizeofbuf = 0;
  	bool stop = false, start = false;
- 	char sidsteTegn = NULL;
+ 	char sidsteTegn = '\0';
 
  	do
  	{
@@ -127,8 +127,8 @@ short Link::receive(char buf[], short size)
  		{
  			switch(v24QueryErrno(serialPort))
  			{
- 			case V24_OK:
- 			case V24_READ:
+ 			case V24_E_OK:
+ 			case V24_E_READ:
  			break;
  			case V24_E_TIMEOUT:
  			default:
@@ -153,9 +153,9 @@ short Link::receive(char buf[], short size)
  				else if((char)RXdata == 'D')
  					buf[sizeofbuf] = 'B';
  				else
- 					return -1;
+ 					return -2;
 
- 				sidsteTegn = NULL;
+ 				sidsteTegn = '\0';
 				
  			}
  			else
@@ -167,11 +167,11 @@ short Link::receive(char buf[], short size)
  			}
  		}
 
- 	}while(stop == false && sizeofbuf != size);
+ 	}while(stop == false && sizeofbuf <= size);
 
  	if(stop == false)
  	{
- 		return -1;
+ 		return -3;
  	}
 
  	return sizeofbuf;

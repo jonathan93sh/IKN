@@ -52,6 +52,31 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 int main(int argc, char** argv)
 {
 	new file_client(argc, argv);
-	
+
+	Transport::Transport test(1000);
+
+	test.send("1234", 5);
+
+	test.send("og igen", 8);
+
+	test.send("1234", 5);
+
+	test.send("Hej med dig", 12);
+
+	char buf[1000];
+
+	test.receive(buf,1000);
+
+	std::cout << buf << std::endl;
+	test.receive(buf,1000);
+
+	std::cout << buf << std::endl;
+	test.receive(buf,1000);
+
+	std::cout << buf << std::endl;
+	test.receive(buf,1000);
+
+	std::cout << buf << std::endl;
+
 	return 0;
 }

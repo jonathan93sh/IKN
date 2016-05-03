@@ -18,6 +18,7 @@ namespace Transport
 		short receive(char buf[], short size);
 	private:	
 		Link::Link *link;
+		short bufsize_;
 		Checksum *checksum;
 		char *buffer;
 		unsigned char seqNo;
@@ -27,6 +28,9 @@ namespace Transport
 		bool checkCRC(int size);
 		bool receiveAck();
 		void sendAck (bool ackType);
+
+
+
 		Transport( const Transport &right){};
 		Transport& operator=(const Transport &) {};
 

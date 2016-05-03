@@ -46,6 +46,35 @@ void file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 int main(int argc, char **argv)
 {
 	new file_server();
-	
+
+	char buf[1000];
+
+	Transport::Transport test(1000);
+
+	test.receive(buf,1000);
+
+	std::cout << buf << std::endl;
+
+	test.receive(buf,1000);
+
+	std::cout << buf << std::endl;
+
+	test.receive(buf,1000);
+
+	std::cout << buf << std::endl;
+
+	test.receive(buf,1000);
+
+	std::cout << buf << std::endl;
+
+
+	test.send("Hej med dig", 12);
+
+	test.send("Hej med dig ;) 1", 17);
+
+	test.send("Hej med dig ;) 2", 17);
+
+	test.send("Hej med dig ;) 3", 17);
+
 	return 0;
 }
