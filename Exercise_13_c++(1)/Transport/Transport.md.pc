@@ -1,5 +1,5 @@
 Name: Transport
 Description: 
 Version: 0.1
-Libs: -L"/root/git/IKN/Exercise_13_c++(1)/Transport/bin/Debug" -lTransport
-Cflags: -I"/root/git/IKN/Exercise_13_c++(1)/Transport"
+Libs: -L"/home/ikn/Desktop/IKN/Exercise_13_c++(1)/Transport/bin/Debug" -lTransport
+Cflags: -I"/home/ikn/Desktop/IKN/Exercise_13_c++(1)/Transport"
