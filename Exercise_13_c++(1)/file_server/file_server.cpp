@@ -21,12 +21,12 @@ file_server::file_server ()
 {
 	Transport::Transport transpo(BUFSIZE);
 	char buf[BUFSIZE];
-	int n;
+	short rcvSize;
 	
 	bzero(buf,BUFSIZE);
 	
-	n = transport.receive(buf, BUFSIZE); 
-	if(n<0)
+	rcvSize = transpo.receive(buf, BUFSIZE); 
+	if(rcvSize<0)
 	{
 		cout << "Intet modtaget" << endl;
 	}
@@ -54,13 +54,11 @@ file_server::file_server ()
 	{
 		if(sendFile(fileName, size, &transpo))
 		{
-			transport->receive(buffer,BUFSIZE);
+			transpo.receive(buffer,BUFSIZE);
 			string check = string(buffer);
 
 			if(check != "ok")
 			{
-				retry = true;
-				retrys++;
 				cout << "fejl i transsmision" << endl;
 			}
 			else
@@ -90,7 +88,6 @@ file_server::file_server ()
 bool file_server::sendFile(std::string fileName, long fileSize, Transport::Transport *transport)
 {
 	char buffer[BUFSIZE];
-	long point = 0;
 
 	sprintf(buffer, "%ld",fileSize);
 	transport->send(buffer, strlen(buffer));
@@ -99,39 +96,35 @@ bool file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 
 	ifstream file; 
 	file.open(fileName.c_str(), fstream::in);
-	double procent = 0;
-	while(point < fileSize)
+
+	if(file.is_open())
 	{
 		int streamSize = BUFSIZE;
-		if((point + BUFSIZE) > fileSize)
-		{
-			streamSize = fileSize -point;
-		}
-			
+		
 		for(int i = 0; i < streamSize; i++)
 		{
 			file.get(buffer[i]);
 		}
+		transport->send(buffer,streamSize);
+	}
+	else
+	{
+		cout << "Fil kunne ikke aabnes" << endl;
+		return false;
+	}
 
-		streamSize = transport->send(buffer,streamSize);
-		//streamSize = write(outToClient, buffer, streamSize);
+	//streamSize = write(outToClient, buffer, streamSize);
 
-		//cout << "sendt : " << streamSize << " point: " << point << "/" << fileSize << endl;
+	//cout << "sendt : " << streamSize << " point: " << point << "/" << fileSize << endl;
 
-		if(streamSize == -1)
-		{
-			cout << "fail lost connection to client!!" << endl;
-			file.close();
-			return false;
-		}
-
-		point += streamSize;
-		if(procent <= ((double)point/(double)fileSize)*100)
-		{
-			cout << "procent done : " << procent << "%" << endl;
-			procent+=25;
-		}
-	} 
+	/*
+	point += streamSize;
+	if(procent <= ((double)point/(double)fileSize)*100)
+	{
+		cout << "procent done : " << procent << "%" << endl;
+		procent+=25;
+	}
+	*/
 
 	file.close();
 	return true;

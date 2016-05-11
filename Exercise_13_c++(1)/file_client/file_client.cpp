@@ -6,6 +6,9 @@
 #include <Transport.h>
 #include <lib.h>
 #include <file_client.h>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 
 /// <summary>
 /// The BUFSIZE
@@ -52,15 +55,15 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
  
 		do{
 			bzero(buf,BUFSIZE);
-			transport->rece½ive(buf, BUFSIZE);
-			size = atol(buf);
+			size = transport->receive(buf, BUFSIZE);
+			//size = atol(buf);
 		 }while(size <= 0);
 		 
 	 	std::cout << "file size: " << size << " bytes" << std::endl;
 
 	 	std::string sha256_string = buf;
 
-	 	std::cout << "sha256 : " << shas256_string << std::endl;
+	 	std::cout << "sha256 : " << sha256_string << std::endl;
 
 	 	std::ofstream file;
 	 	file.open(fileName.c_str());
@@ -71,7 +74,7 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 	 	for(long i = 0; i<fileSize; i++)
 	 	{
 	 		transport->receive(buf,size);
-	 		file.put(buf);
+	 		file.put(*buf);
 	 		if(procent <= ((double)(i+1)/(double)size)*100)
 			{
 				std::cout << "procent done : " << procent << "%" << std::endl;
@@ -90,7 +93,7 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 		{
 			std::cout << "sha256 passer ikke!" << std::endl;
 			retry = true;
-			string nope = "It's not ok yet";
+			std::string nope = "It's not ok yet";
 
 			transport->send(nope.c_str(), nope.size()+1);
 		}
@@ -98,9 +101,9 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 		{
 			std::cout << "sha256 er ens" << std::endl;
 			retry = false;
-			
-			string ok = "ok";
-			transport->(ok.c_str(), ok.size()+1);
+			std::string ok = "ok";
+
+			transport->send(ok.c_str(), ok.size()+1);
 		}
 
 	} while(retry);
