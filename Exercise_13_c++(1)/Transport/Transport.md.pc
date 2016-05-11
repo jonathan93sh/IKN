@@ -2,4 +2,4 @@ Name: Transport
 Description: 
 Version: 0.1
 Libs: -L"/root/IKN/Exercise_13_c++(1)/Transport/bin/Debug" -lTransport
-Cflags: -I"/root/IKN/Exercise_13_c++(1)/Transport"
+Cflags: -I"/root/IKN/Exercise_13_c++(1)/Transport" -lssl -lcrypto
