@@ -1,11 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="file_client/file_client.cpp">
+  <MonoDevelop.Ide.Workbench ActiveDocument="LIB/lib.h">
     <Files>
-      <File FileName="file_client/file_client.cpp" Line="8" Column="8" />
+      <File FileName="file_client/file_client.cpp" Line="3" Column="3" />
       <File FileName="LIB/lib.cpp" Line="2" Column="2" />
-      <File FileName="LIB/lib.h" Line="20" Column="20" />
+      <File FileName="LIB/lib.h" Line="2" Column="2" />
       <File FileName="file_server/file_server.cpp" Line="7" Column="7" />
+      <File FileName="file_server/file_server.h" Line="17" Column="17" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

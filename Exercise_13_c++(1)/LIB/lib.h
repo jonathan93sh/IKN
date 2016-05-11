@@ -9,7 +9,7 @@
 #define LIB_H_
 
 #include <iostream>
-extern "C"{
+ extern "C"{
 #include <openssl/sha.h>
 }
 

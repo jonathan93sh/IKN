@@ -24,7 +24,7 @@
         <Include>${ProjectDir}</Include>
       </Includes>
     </Includes>
-    <ExtraCompilerArguments>-lssl -lcrypto</ExtraCompilerArguments>
+    <ExtraCompilerArguments>--lssl -lcrypto</ExtraCompilerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>

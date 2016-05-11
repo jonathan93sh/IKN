@@ -51,7 +51,7 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 
  	do
  	{
- 	  	transport->send(fileName.c_str(),fileName.length()+1);
+ 	  	transport->send(fileName.c_str(),fileName.size()+1);
  
 		do{
 			bzero(buf,BUFSIZE);
