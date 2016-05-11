@@ -43,7 +43,7 @@ file_server::file_server ()
 	}
 	
 	cout << "sendt size til klient" << endl;
-	string sha256_str = getFile_sha_sum(fileName);
+	std::string sha256_str = getFile_sha_sum(fileName);
 	cout << "sha256 : " << sha256_str << endl;
 	
 	if(size == 0)
