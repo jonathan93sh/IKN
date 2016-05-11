@@ -26,6 +26,8 @@
 /// </param>
 file_client::file_client(int argc, char **argv)
 {
+	short fileNameLength = sizeof(extractFileName(argv[1]));
+  	Transport::Transport transpo = Transport::Transport(fileNameLength);
 	// syntax ./file_client <[sti] + filnavn>
   	if (argc != 2)
     	error("For faa input argumenter");
@@ -33,11 +35,11 @@ file_client::file_client(int argc, char **argv)
   	if(check_File_Exists(extractFileName(argv[1])) != 0)
   		error("Filen findes allerede");
 
-  	transport->send(argv[1], sizeof(argv[1]));
+  	transpo.send(argv[1], fileNameLength);
 
-  	cout << "Besked sendt til transportlageret" << endl;
+  	std::cout << "Besked sendt til transportlageret" << std::endl;
 
-  	receiveFile(extractFileName(argv[1]),&XXXXX);
+  	receiveFile(extractFileName(argv[1]),&transpo);
 }
 
 /// <summary>
@@ -60,15 +62,14 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 		do{
 		 	size = transport->receive(buf, size);
 		 }while(size < 0);
-	 	char buf;
 		 
-	 	cout << "file size: " << size << " bytes" << endl;
+	 	std::cout << "file size: " << size << " bytes" << std::endl;
 
-	 	string sha256_string = buf;
+	 	std::string sha256_string = buf;
 
-	 	cout << "sha256 : " << sha256_string << endl;
+	 	std::cout << "sha256 : " << sha256_string << std::endl;
 
-	 	ofstream file; 
+	 	std::ofstream file; 
 	 	file.open(fileName.c_str());
 
 	 	double procent = 0;
@@ -76,29 +77,29 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 	 	for(long i = 0; i<size; i++)
 	 	{
 	 		transport->receive(buf,size);
-	 		file.put(buf);
+	 		file.put(*buf);
 	 		if(procent <= ((double)(i+1)/(double)size)*100)
 			{
-				cout << "procent done : " << procent << "%" << endl;
+				std::cout << "procent done : " << procent << "%" << std::endl;
 				procent+=25;
 			}
 	 	}
-	 	cout << "done"  << endl;
+	 	std::cout << "done"  << std::endl;
 
 		file.close();
+	 	
+		std::string modtaget_sha256_string = getFile_sha_sum(fileName);
 
-		string modtaget_sha256_string = getFile_sha_sum(fileName);
-
-		cout << "sha256 : " << modtaget_sha256_string << " modtaget" << endl;
+		std::cout << "sha256 : " << modtaget_sha256_string << " modtaget" << std::endl;
 
 		if(sha256_string != modtaget_sha256_string)
 		{
-			cout << "sha256 passer ikke!" << endl;
+			std::cout << "sha256 passer ikke!" << std::endl;
 			retry = true;
 		}
 		else
 		{
-			cout << "sha256 er ens" << endl;
+			std::cout << "sha256 er ens" << std::endl;
 			retry = false;
 		}
 
@@ -113,6 +114,7 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 /// </param>
 int main(int argc, char** argv)
 {
+	/*
 	new file_client(argc, argv);
 
 	Transport::Transport test(1000);
@@ -139,6 +141,6 @@ int main(int argc, char** argv)
 	test.receive(buf,1000);
 
 	std::cout << buf << std::endl;
-
+	*/
 	return 0;
 }

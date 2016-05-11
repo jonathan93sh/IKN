@@ -11,7 +11,7 @@ public:
 private:
 	char *buffer;
 	
-	void sendFile(std::string fileName, long fileSize, Transport::Transport *transport);
+	bool sendFile(std::string fileName, long fileSize, Transport::Transport *transport);
 };
 
 #endif /* __SLIP_SERVER_H__ */

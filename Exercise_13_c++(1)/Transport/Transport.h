@@ -28,10 +28,8 @@ namespace Transport
 		bool checkCRC(int size);
 		bool receiveAck();
 		void sendAck (bool ackType);
-
-
-
-		Transport( const Transport &right){};
+	
+		//Transport( const Transport &right){};
 		Transport& operator=(const Transport &) {};
 
 	};

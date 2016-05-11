@@ -7,6 +7,8 @@
 #include <lib.h>
 #include <file_server.h>
 
+using namespace std;
+
 /// <summary>
 /// The BUFSIZE
 /// </summary>
@@ -32,9 +34,50 @@ file_server::file_server ()
 /// <param name='transport'>
 /// Transport lag.
 /// </param>
-void file_server::sendFile(std::string fileName, long fileSize, Transport::Transport *transport)
+bool file_server::sendFile(std::string fileName, long fileSize, Transport::Transport *transport)
 {
-	// To do Your own code
+	char buf[BUFSIZE];
+	long point = 0;
+
+	ifstream file; 
+	file.open(fileName.c_str(), fstream::in);
+	double procent = 0;
+	while(point < fileSize)
+	{
+		int streamSize = BUFSIZE;
+		if((point + BUFSIZE) > fileSize)
+		{
+			streamSize = fileSize -point;
+		}
+			
+		for(int i = 0; i < streamSize; i++)
+		{
+			
+			file.get(buf[i]);
+		}
+
+		transport->send(buf,streamSize);
+		//streamSize = write(outToClient, buf, streamSize);
+
+		//cout << "sendt : " << streamSize << " point: " << point << "/" << fileSize << endl;
+
+		if(streamSize == -1)
+		{
+			cout << "fail lost connection to client!!" << endl;
+			file.close();
+			return false;
+		}
+
+		point += streamSize;
+		if(procent <= ((double)point/(double)fileSize)*100)
+		{
+			cout << "procent done : " << procent << "%" << endl;
+			procent+=25;
+		}
+	} 
+
+	file.close();
+	return true;
 }
 
 /// <summary>
@@ -46,7 +89,7 @@ void file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 int main(int argc, char **argv)
 {
 	new file_server();
-
+	/*
 	char buf[1000];
 
 	Transport::Transport test(1000);
@@ -75,6 +118,6 @@ int main(int argc, char **argv)
 	test.send("Hej med dig ;) 2", 17);
 
 	test.send("Hej med dig ;) 3", 17);
-
+	*/
 	return 0;
 }

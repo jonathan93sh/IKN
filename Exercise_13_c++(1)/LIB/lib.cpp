@@ -16,6 +16,13 @@
 #include <netdb.h>
 #include <sys/stat.h>
 #include <lib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+
+ extern "C" {
+#include <openssl/sha.h>
+}
 
 /**
  * Udskriver fejlmeddelelse og stoppe programmet
