@@ -19,7 +19,60 @@ using namespace std;
 /// </summary>
 file_server::file_server ()
 {
-	// TO DO Your own code
+	Transport::Transport transpo(BUFSIZE);
+	char buf[BUFSIZE];
+	int n;
+	
+	bzero(buf,BUFSIZE);
+	
+	n = transport.receive(buf, BUFSIZE); 
+	if(n<0)
+	{
+		cout << "Intet modtaget" << endl;
+	}
+	string fileName = string(buf);
+	
+	cout << "Klienten vil gerne hente filen: " << fileName << endl;
+	
+	long size = check_File_Exists(fileName);
+
+	if(size <= 0)
+	{
+		cout << "No file" << endl;
+		//break;
+	}
+	
+	cout << "sendt size til klient" << endl;
+	string sha256_str = getFile_sha_sum(fileName);
+	cout << "sha256 : " << sha256_str << endl;
+	
+	if(size == 0)
+	{
+		error("Filen findes ikke!");
+	}
+	else
+	{
+		if(sendFile(fileName, size, &transpo))
+		{
+			transport->receive(buffer,BUFSIZE);
+			string check = string(buffer);
+
+			if(check != "ok")
+			{
+				retry = true;
+				retrys++;
+				cout << "fejl i transsmision" << endl;
+			}
+			else
+			{
+				cout << "Filen er sendt lukker socket mellem server og klient" << endl;
+			}
+		}
+		// else
+		// {
+		//		break;
+		// }
+	}
 }
 
 /// <summary>
@@ -36,8 +89,13 @@ file_server::file_server ()
 /// </param>
 bool file_server::sendFile(std::string fileName, long fileSize, Transport::Transport *transport)
 {
-	char buf[BUFSIZE];
+	char buffer[BUFSIZE];
 	long point = 0;
+
+	sprintf(buffer, "%ld",fileSize);
+	transport->send(buffer, strlen(buffer));
+
+	bzero(buffer,BUFSIZE);
 
 	ifstream file; 
 	file.open(fileName.c_str(), fstream::in);
@@ -52,12 +110,11 @@ bool file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 			
 		for(int i = 0; i < streamSize; i++)
 		{
-			
-			file.get(buf[i]);
+			file.get(buffer[i]);
 		}
 
-		transport->send(buf,streamSize);
-		//streamSize = write(outToClient, buf, streamSize);
+		streamSize = transport->send(buffer,streamSize);
+		//streamSize = write(outToClient, buffer, streamSize);
 
 		//cout << "sendt : " << streamSize << " point: " << point << "/" << fileSize << endl;
 
@@ -89,6 +146,8 @@ bool file_server::sendFile(std::string fileName, long fileSize, Transport::Trans
 int main(int argc, char **argv)
 {
 	new file_server();
+	
+	
 	/*
 	char buf[1000];
 

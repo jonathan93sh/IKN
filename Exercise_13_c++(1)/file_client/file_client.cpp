@@ -26,7 +26,7 @@
 /// </param>
 file_client::file_client(int argc, char **argv)
 {
-  	Transport::Transport transpo(BUFFSIZE);
+  	Transport::Transport transpo(BUFSIZE);
 
   	receiveFile(extractFileName(argv[1]),&transpo);
 }
@@ -44,11 +44,11 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 {
 	bool retry = false;
   	char buf[BUFSIZE];
-  	short size;
+  	short size, fileSize;
 
  	do
  	{
- 	  	transport->send(fileName.c_str(),fileName.length() +1);
+ 	  	transport->send(fileName.c_str(),fileName.length()+1);
  
 		do{
 			bzero(buf,BUFSIZE);
@@ -66,11 +66,12 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 	 	file.open(fileName.c_str());
 
 	 	double procent = 0;
-
-	 	for(long i = 0; i<size; i++)
+		fileSize = size;
+		
+	 	for(long i = 0; i<fileSize; i++)
 	 	{
 	 		transport->receive(buf,size);
-	 		file.put(*buf);
+	 		file.put(buf);
 	 		if(procent <= ((double)(i+1)/(double)size)*100)
 			{
 				std::cout << "procent done : " << procent << "%" << std::endl;
@@ -89,11 +90,17 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 		{
 			std::cout << "sha256 passer ikke!" << std::endl;
 			retry = true;
+			string nope = "It's not ok yet";
+
+			transport->send(nope.c_str(), nope.size()+1);
 		}
 		else
 		{
 			std::cout << "sha256 er ens" << std::endl;
 			retry = false;
+			
+			string ok = "ok";
+			transport->(ok.c_str(), ok.size()+1);
 		}
 
 	} while(retry);
@@ -109,7 +116,7 @@ int main(int argc, char** argv)
 {
 	// syntax ./file_client <[sti] + filnavn>
   	if (argc != 2)
-    	error("For faa input argumenter");
+    	error("Forkert antal input argumenter");
 
   	if(check_File_Exists(extractFileName(argv[1])) != 0)
   		error("Filen findes allerede");
