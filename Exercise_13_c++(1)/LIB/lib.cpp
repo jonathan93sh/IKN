@@ -20,10 +20,6 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
- extern "C" {
-#include <openssl/sha.h>
-}
-
 /**
  * Udskriver fejlmeddelelse og stoppe programmet
  *
