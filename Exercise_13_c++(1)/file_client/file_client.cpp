@@ -26,18 +26,7 @@
 /// </param>
 file_client::file_client(int argc, char **argv)
 {
-	short fileNameLength = sizeof(extractFileName(argv[1]));
-  	Transport::Transport transpo = Transport::Transport(fileNameLength);
-	// syntax ./file_client <[sti] + filnavn>
-  	if (argc != 2)
-    	error("For faa input argumenter");
-
-  	if(check_File_Exists(extractFileName(argv[1])) != 0)
-  		error("Filen findes allerede");
-
-  	transpo.send(argv[1], fileNameLength);
-
-  	std::cout << "Besked sendt til transportlageret" << std::endl;
+  	Transport::Transport transpo(BUFFSIZE);
 
   	receiveFile(extractFileName(argv[1]),&transpo);
 }
@@ -54,22 +43,26 @@ file_client::file_client(int argc, char **argv)
 void file_client::receiveFile (std::string fileName, Transport::Transport *transport)
 {
 	bool retry = false;
+  	char buf[BUFSIZE];
+  	short size;
 
  	do
  	{
- 		short size;
- 		char buf[size];
+ 	  	transport->send(fileName.c_str(),fileName.length() +1);
+ 
 		do{
-		 	size = transport->receive(buf, size);
-		 }while(size < 0);
+			bzero(buf,BUFSIZE);
+			transport->rece½ive(buf, BUFSIZE);
+			size = atol(buf);
+		 }while(size <= 0);
 		 
 	 	std::cout << "file size: " << size << " bytes" << std::endl;
 
 	 	std::string sha256_string = buf;
 
-	 	std::cout << "sha256 : " << sha256_string << std::endl;
+	 	std::cout << "sha256 : " << shas256_string << std::endl;
 
-	 	std::ofstream file; 
+	 	std::ofstream file;
 	 	file.open(fileName.c_str());
 
 	 	double procent = 0;
@@ -114,33 +107,14 @@ void file_client::receiveFile (std::string fileName, Transport::Transport *trans
 /// </param>
 int main(int argc, char** argv)
 {
-	/*
-	new file_client(argc, argv);
+	// syntax ./file_client <[sti] + filnavn>
+  	if (argc != 2)
+    	error("For faa input argumenter");
 
-	Transport::Transport test(1000);
+  	if(check_File_Exists(extractFileName(argv[1])) != 0)
+  		error("Filen findes allerede");
 
-	test.send("1234", 5);
+	new file_client(argc, argv);  	
 
-	test.send("og igen", 8);
-
-	test.send("1234", 5);
-
-	test.send("Hej med dig", 12);
-
-	char buf[1000];
-
-	test.receive(buf,1000);
-
-	std::cout << buf << std::endl;
-	test.receive(buf,1000);
-
-	std::cout << buf << std::endl;
-	test.receive(buf,1000);
-
-	std::cout << buf << std::endl;
-	test.receive(buf,1000);
-
-	std::cout << buf << std::endl;
-	*/
 	return 0;
 }
