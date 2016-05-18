@@ -1,12 +1,16 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="file_server/file_server.cpp">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Link/Link.cpp">
     <Files>
-      <File FileName="file_client/file_client.cpp" Line="1" Column="1" />
+      <File FileName="Link/Link.h" Line="1" Column="1" />
+      <File FileName="Link/Link.cpp" Line="24" Column="24" />
+      <File FileName="file_client/file_client.cpp" Line="23" Column="23" />
+      <File FileName="file_server/file_server.cpp" Line="62" Column="62" />
+      <File FileName="Transport/Transport.cpp" Line="3" Column="3" />
+      <File FileName="Transport/Transport.h" Line="9" Column="9" />
+      <File FileName="Transport/TransConst.h" Line="15" Column="15" />
       <File FileName="LIB/lib.cpp" Line="1" Column="1" />
       <File FileName="LIB/lib.h" Line="1" Column="1" />
-      <File FileName="file_server/file_server.cpp" Line="3" Column="3" />
-      <File FileName="file_server/file_server.h" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

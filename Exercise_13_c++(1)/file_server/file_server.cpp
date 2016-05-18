@@ -1,175 +1,128 @@
+//============================================================================
+// Name        : file_server.cpp
+// Author      : Lars Mortensen
+// Version     : 1.0
+// Description : file_server in C++, Ansi-style
+//============================================================================
+
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <sstream>
-#include <cstring>
-#include <Transport.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <netinet/in.h>
 #include <lib.h>
-#include <file_server.h>
+#include <iostream>
+#include <fstream>
+#include <sys/time.h>
+#include <Transport.h>
+
+#define TIME_OUT 5000
+
+#define BUFSIZE 1000
 
 using namespace std;
 
-/// <summary>
-/// The BUFSIZE
-/// </summary>
-#define BUFSIZE 1000
+bool sendFile(string fileName, long fileSize, Transport::Transport * socket);
 
-/// <summary>
-/// Initializes a new instance of the <see cref="file_server"/> class.
-/// </summary>
-file_server::file_server ()
+/**
+ * main starter serveren og venter på en forbindelse fra en klient
+ * Læser filnavn som kommer fra klienten.
+ * Undersøger om filens findes på serveren.
+ * Sender filstørrelsen tilbage til klienten (0 = Filens findes ikke)
+ * Hvis filen findes sendes den nu til klienten
+ *
+ * HUSK at lukke forbindelsen til klienten og filen nÃ¥r denne er sendt til klienten
+ *
+ * @throws IOException
+ *
+ */
+int main(int argc, char *argv[])
 {
-	Transport::Transport transpo(BUFSIZE);
-	char buf[BUFSIZE];
-	short rcvSize;
-	
-	bzero(buf,BUFSIZE);
-	
-	rcvSize = transpo.receive(buf, BUFSIZE); 
-	if(rcvSize<0)
-	{
-		cout << "Intet modtaget" << endl;
-	}
-	string fileName = string(buf);
-	
-	cout << "Klienten vil gerne hente filen: " << fileName << endl;
-	
-	long size = check_File_Exists(fileName);
 
-	if(size <= 0)
+ 	char buf[BUFSIZE];
+ 	short rcvSize = -1;
+
+ 	Transport::Transport socket(BUFSIZE);
+ 	cout << "Server is running" << endl;
+	while(1)
 	{
-		cout << "No file" << endl;
-		//break;
-	}
-	
-	cout << "sendt size til klient" << endl;
-	std::string sha256_str = getFile_sha_sum(fileName);
-	cout << "sha256 : " << sha256_str << endl;
-	
-	if(size == 0)
-	{
-		error("Filen findes ikke!");
-	}
-	else
-	{
-		if(sendFile(fileName, size, &transpo))
+		socket.restart();
+		rcvSize = socket.receive(buf, BUFSIZE);
+		string file = buf;
+		cout << "en klient har oprettet forbindelse til denne server!" << endl;
+		cout << "klienten vil gerne hente filen: " << file << endl;
+
+		long size = check_File_Exists(file);
+		sprintf(buf, "%ld", size);
+		cout << "file size : " << size << " bytes" << endl;
+		socket.send(buf, strlen(buf)+1);
+		cout << "sendt size til klient" << endl;
+
+		if(size >= 1)
 		{
-			transpo.receive(buffer,BUFSIZE);
-			string check = string(buffer);
 
-			if(check != "ok")
+			string sha256_str = getFile_sha_sum(file);
+			cout << "sha256 : " << sha256_str << endl;
+			socket.send(sha256_str.c_str(), sha256_str.size()+1);
+
+			if(sendFile(file, size, &socket))
 			{
-				cout << "fejl i transsmision" << endl;
-			}
-			else
-			{
-				cout << "Filen er sendt lukker socket mellem server og klient" << endl;
+				cout << "filen er sendt" << endl;
 			}
 		}
-		// else
-		// {
-		//		break;
-		// }
+		else
+		{
+			cout << "filen findes ikke" << endl;
+		}
 	}
+		
+	return 0;
 }
 
-/// <summary>
-/// Sends the file.
-/// </summary>
-/// <param name='fileName'>
-/// File name.
-/// </param>
-/// <param name='fileSize'>
-/// File size.
-/// </param>
-/// <param name='transport'>
-/// Transport lag.
-/// </param>
-bool file_server::sendFile(std::string fileName, long fileSize, Transport::Transport *transport)
+/**
+ * Sender filen som har navnet fileName til klienten
+ *
+ * @param fileName Filnavn som skal sendes til klienten
+ * @param fileSize Størrelsen på filen, 0 hvis den ikke findes
+ * @param outToClient Stream som der skrives til socket
+	 */
+bool sendFile(string fileName, long fileSize, Transport::Transport * socket)
 {
-	char buffer[BUFSIZE];
+	char buf[BUFSIZE];
+	long point = 0;
 
-	sprintf(buffer, "%ld",fileSize);
-	transport->send(buffer, strlen(buffer));
-
-	bzero(buffer,BUFSIZE);
 
 	ifstream file; 
 	file.open(fileName.c_str(), fstream::in);
-
-	if(file.is_open())
+	double procent = 0;
+	while(point < fileSize)
 	{
 		int streamSize = BUFSIZE;
-		
+		if((point + BUFSIZE) > fileSize)
+		{
+			streamSize = fileSize -point;
+		}
+			
 		for(int i = 0; i < streamSize; i++)
 		{
-			file.get(buffer[i]);
+			
+			file.get(buf[i]);
 		}
-		transport->send(buffer,streamSize);
-	}
-	else
-	{
-		cout << "Fil kunne ikke aabnes" << endl;
-		return false;
-	}
 
-	//streamSize = write(outToClient, buffer, streamSize);
+		socket->send(buf, streamSize);
 
-	//cout << "sendt : " << streamSize << " point: " << point << "/" << fileSize << endl;
-
-	/*
-	point += streamSize;
-	if(procent <= ((double)point/(double)fileSize)*100)
-	{
-		cout << "procent done : " << procent << "%" << endl;
-		procent+=25;
-	}
-	*/
+		point += streamSize;
+		if(procent <= ((double)point/(double)fileSize)*100)
+		{
+			cout << "procent done : " << procent << "%" << endl;
+			procent+=25;
+		}
+	} 
 
 	file.close();
-	return true;
+	return true;		 
 }
 
-/// <summary>
-/// The entry point of the program, where the program control starts and ends.
-/// </summary>
-/// <param name='args'>
-/// The command-line arguments.
-/// </param>
-int main(int argc, char **argv)
-{
-	new file_server();
-	
-	
-	/*
-	char buf[1000];
-
-	Transport::Transport test(1000);
-
-	test.receive(buf,1000);
-
-	std::cout << buf << std::endl;
-
-	test.receive(buf,1000);
-
-	std::cout << buf << std::endl;
-
-	test.receive(buf,1000);
-
-	std::cout << buf << std::endl;
-
-	test.receive(buf,1000);
-
-	std::cout << buf << std::endl;
-
-
-	test.send("Hej med dig", 12);
-
-	test.send("Hej med dig ;) 1", 17);
-
-	test.send("Hej med dig ;) 2", 17);
-
-	test.send("Hej med dig ;) 3", 17);
-	*/
-	return 0;
-}

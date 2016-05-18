@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{10C53A8D-3A2D-409D-ADEE-D3C7B5AA7C8B}</ProjectGuid>
+    <ProjectGuid>{7C0FDA4A-B680-43FD-B694-CB5B91893CF1}</ProjectGuid>
     <Target>Bin</Target>
     <Language>CPP</Language>
     <Compiler>
@@ -17,32 +17,41 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
-    <OutputName>LIB</OutputName>
+    <OutputName>Link</OutputName>
     <CompileTarget>StaticLibrary</CompileTarget>
     <Includes>
       <Includes>
         <Include>${ProjectDir}</Include>
       </Includes>
     </Includes>
-    <ExtraLinkerArguments>--lssl -lcrypto</ExtraLinkerArguments>
+    <Libs>
+      <Libs>
+        <Lib>ezV24</Lib>
+      </Libs>
+    </Libs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
     <DefineSymbols>MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
     <OptimizationLevel>3</OptimizationLevel>
-    <OutputName>LIB</OutputName>
+    <OutputName>Link</OutputName>
     <CompileTarget>StaticLibrary</CompileTarget>
     <Includes>
       <Includes>
         <Include>${ProjectDir}</Include>
       </Includes>
     </Includes>
+    <Libs>
+      <Libs>
+        <Lib>ezV24</Lib>
+      </Libs>
+    </Libs>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="lib.h" />
+    <None Include="Link.h" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="lib.cpp" />
+    <Compile Include="Link.cpp" />
   </ItemGroup>
 </Project>

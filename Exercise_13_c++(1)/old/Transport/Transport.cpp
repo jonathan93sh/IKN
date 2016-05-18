@@ -6,7 +6,6 @@
 
 #define DEFAULT_SEQNO 2
 
-
 namespace Transport
 {
 	/// <summary>
@@ -23,8 +22,6 @@ namespace Transport
 		bufsize_ = BUFSIZE+ACKSIZE;
 	}
 
-
-
 	/// <summary>
 	/// Delete dynamics attribute before delete this object.
 	/// </summary>
@@ -34,14 +31,7 @@ namespace Transport
 		if(checksum) delete checksum;
 		if(buffer) delete [] buffer;
 	}
-
-	void Transport::restart()
-	{
-		seqNo = 0;
-		old_seqNo = DEFAULT_SEQNO;
-		errorCount = 0;
-	}
-
+	
 	/// <summary>
 	/// Receives the ack.
 	/// </summary>
@@ -118,7 +108,6 @@ namespace Transport
 
 	void Transport::send(const char buf[], short size)
 	{
-
 		if(size > bufsize_-ACKSIZE)
 			return;
 	
@@ -151,26 +140,28 @@ namespace Transport
 	{
 
 		int size_of_rcv;
+
 		do{
 			do
 			{
-				size_of_rcv = link->receive(buffer, size+ACKSIZE);
-			}while(size_of_rcv < ACKSIZE - 1);
-			
+				size_of_rcv = link->receive(buffer, bufsize_);//size+ACKSIZE);
+			}while(size_of_rcv < -1);
+				
 			if(size_of_rcv < -1)
 				return size_of_rcv;
-			
-			if(!checksum->checkChecksum(buffer, size_of_rcv) || (buffer[SEQNO] != seqNo && old_seqNo != 2))
+				
+			if(size_of_rcv > -1 && (!checksum->checkChecksum(buffer, size_of_rcv) || buffer[TYPE]!=DATA || (buffer[SEQNO] != seqNo && old_seqNo != 2) || size_of_rcv-ACKSIZE > size))
 			{
 				buffer[SEQNO]=seqNo;
-				std::cout << "modtaget en oedelagt besked seq_nr : " << (int)buffer[SEQNO] << " = " << (int)seqNo << " datatype : " << (int)buffer[TYPE] << std::endl;
 				sendAck(ACK);
+				std::cout << "modtaget en oedelagt besked : " << (int)buffer[SEQNO] << " = " << (int)seqNo << " datatype : " << (int)buffer[TYPE] << std::endl;
 				size_of_rcv = -1;
 			}
-
+				
+				
 		}while(size_of_rcv == -1);
 
-		std::cout << "modtaget en besked seq_nr: " << (int)buffer[SEQNO] << " datatype : " << (int)buffer[TYPE] << std::endl;
+		std::cout << "modtaget en besked : " << (int)buffer[SEQNO] << " datatype : " << (int)buffer[TYPE] << std::endl;
 		old_seqNo=buffer[SEQNO];
 		seqNo=(old_seqNo+1)%2;
 
@@ -179,6 +170,7 @@ namespace Transport
 		{
 			buf[i-ACKSIZE]=buffer[i];
 		}
+			
 
 		sendAck(ACK);
 

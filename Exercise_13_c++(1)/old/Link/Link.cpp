@@ -129,9 +129,8 @@ short Link::receive(char buf[], short size)
  			{
  			case V24_E_OK:
  			case V24_E_READ:
- 			case V24_E_TIMEOUT:
  			break;
-
+ 			case V24_E_TIMEOUT:
  			default:
  				return -1;
  			break;
@@ -156,8 +155,9 @@ short Link::receive(char buf[], short size)
  				else
  					return -2;
 
+ 				sizeofbuf++;
  				sidsteTegn = '\0';
-				sizeofbuf++;
+				
  			}
  			else
  			{
@@ -168,12 +168,16 @@ short Link::receive(char buf[], short size)
  			}
  		}
 
- 	}while(stop == false && sizeofbuf <= size);
+
+
+ 	}while(stop == false && sizeofbuf != size);
+
 
  	if(stop == false)
  	{
  		return -3;
  	}
+
 
  	return sizeofbuf;
 }

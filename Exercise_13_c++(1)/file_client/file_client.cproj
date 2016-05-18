@@ -29,7 +29,6 @@
     </Includes>
     <Libs>
       <Libs>
-        <Lib>LIB</Lib>
         <Lib>Transport</Lib>
         <Lib>Link</Lib>
         <Lib>ezV24</Lib>
@@ -42,8 +41,8 @@
         <LibPath>${ProjectDir}/../Link/bin/Debug</LibPath>
       </LibPaths>
     </LibPaths>
-    <ExtraCompilerArguments>-L"/root/Desktop/IKN/Exercise_13_c++(1)/file_server/file_server/../LIB/bin/Debug" -l"LIB" -lssl -lcrypto </ExtraCompilerArguments>
-    <ExtraLinkerArguments>-L"/root/Desktop/IKN/Exercise_13_c++(1)/file_server/file_server/../LIB/bin/Debug" -l"LIB" -lssl -lcrypto </ExtraLinkerArguments>
+    <ExtraCompilerArguments>-L"../LIB/bin/Debug" -l"LIB" -lssl -lcrypto </ExtraCompilerArguments>
+    <ExtraLinkerArguments>-L"../LIB/bin/Debug" -l"LIB" -lssl -lcrypto </ExtraLinkerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
